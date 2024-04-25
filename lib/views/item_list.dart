@@ -15,35 +15,43 @@ class ItemsList extends StatefulWidget {
 }
 
 class _ItemsListState extends State<ItemsList> {
-  late Future<List<Item>> itemsFuture;
+  late List<Item> items = [];
+  bool isLoading = true;
+  String? errorMessage;
 
   @override
   void initState() {
     super.initState();
-    itemsFuture = widget.itemService.fetchItems();
+    fetchItemList();
+  }
+
+  Future fetchItemList() async {
+    try {
+      items = await widget.itemService.fetchItems();
+    } catch (e) {
+      items = [];
+      errorMessage = "Failed to fetch data";
+    }
+    isLoading = false;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Item>>(
-      future: itemsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && snapshot.data!.isNotEmpty && snapshot.data != null) {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final item = snapshot.data![index];
-              return ListTile(
-                title: Text(item.title),
-                key: Key('item_${item.id}'),
-              );
-            },
-          );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        }
-        return const CircularProgressIndicator();
-      },
-    );
+    if (isLoading) {
+      return const Center(
+          child: CircularProgressIndicator(
+        key: GlobalObjectKey("LOADING_INDICATOR"),
+      ));
+    } else if (errorMessage != null) {
+      return Center(child: Text(errorMessage ?? ""));
+    } else {
+      return ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          return Text(items[index].title);
+        },
+      );
+    }
   }
 }
