@@ -28,7 +28,7 @@ class _ItemsListState extends State<ItemsList> {
     return FutureBuilder<List<Item>>(
       future: itemsFuture,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && snapshot.data!.isNotEmpty && snapshot.data != null) {
           return ListView.builder(
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {

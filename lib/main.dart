@@ -17,7 +17,7 @@ class MyWidgetTestDemoApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: ItemsList(
-        itemService: DemoItemService(),
+        itemService: DemoItemServices(),
       ),
     );
   }
